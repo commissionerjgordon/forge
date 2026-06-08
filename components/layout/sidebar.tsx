@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   FolderKanban,
@@ -11,18 +11,18 @@ import {
   Plus,
   Menu,
   X,
-} from "lucide-react";
-import { UserButton, useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { ThemeToggle } from "./theme-toggle";
+} from 'lucide-react';
+import { UserButton, useUser } from '@clerk/nextjs';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+import { ThemeToggle } from './theme-toggle';
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/projects", label: "Projects", icon: FolderKanban },
-  { href: "/workspaces", label: "Workspaces", icon: Users },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/projects', label: 'Projects', icon: FolderKanban },
+  { href: '/workspaces', label: 'Workspaces', icon: Users },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function Sidebar() {
@@ -44,7 +44,7 @@ export function Sidebar() {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 border-r bg-card transform transition-transform duration-300 md:translate-x-0 ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 border-r bg-card transform transition-transform duration-300 md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
@@ -80,7 +80,7 @@ export function Sidebar() {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsMobileOpen(false)}
-                    className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-accent ${isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                    className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-accent ${isActive ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                   >
                     <item.icon size={20} />
                     {item.label}
@@ -97,7 +97,7 @@ export function Sidebar() {
             <UserButton />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">
-                {user?.fullName || "User"}
+                {user?.fullName || 'User'}
               </p>
               <p className="text-xs text-muted-foreground truncate">
                 {user?.primaryEmailAddress?.emailAddress}
