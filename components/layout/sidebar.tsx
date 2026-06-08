@@ -1,0 +1,112 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  FolderKanban,
+  Users,
+  Settings,
+  Plus,
+  Menu,
+  X,
+} from "lucide-react";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "./theme-toggle";
+
+const navItems = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/projects", label: "Projects", icon: FolderKanban },
+  { href: "/workspaces", label: "Workspaces", icon: Users },
+  { href: "/settings", label: "Settings", icon: Settings },
+];
+
+export function Sidebar() {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const { user } = useUser();
+
+  return (
+    <>
+      {/* Mobile Menu Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-4 left-4 z-50 md:hidden"
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+      >
+        {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
+      </Button>
+
+      {/* Sidebar */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-72 border-r bg-card transform transition-transform duration-300 md:translate-x-0 ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        <div className="flex h-full flex-col">
+          {/* Logo */}
+          <div className="p-6 border-b">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-linear-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-2xl">F</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">Forge</h1>
+                <p className="text-xs text-muted-foreground -mt-1">
+                  build together
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* New Button */}
+          <div className="p-4">
+            <Button className="w-full justify-start gap-2" size="lg">
+              <Plus size={20} />
+              New Project
+            </Button>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 px-3 py-4">
+            <div className="space-y-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileOpen(false)}
+                    className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors hover:bg-accent ${isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    <item.icon size={20} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+
+          <Separator />
+
+          {/* Bottom Section */}
+          <div className="flex items-center gap-3">
+            <UserButton />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {user?.fullName || "User"}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user?.primaryEmailAddress?.emailAddress}
+              </p>
+            </div>
+            <ThemeToggle />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
