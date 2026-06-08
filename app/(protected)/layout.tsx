@@ -1,6 +1,6 @@
-import { Sidebar } from "@/components/layout/sidebar";
-import { redirect } from "next/navigation";
-import { currentUser } from "@clerk/nextjs/server";
+import { Sidebar } from '@/components/layout/sidebar';
+import { redirect } from 'next/navigation';
+import { currentUser } from '@clerk/nextjs/server';
 
 export default async function ProtectedLayout({
   children,
@@ -10,7 +10,7 @@ export default async function ProtectedLayout({
   const user = await currentUser();
 
   if (!user) {
-    redirect("/sign-in");
+    redirect('/sign-in');
   }
 
   return (
