@@ -33,41 +33,45 @@ model Account {
 
 model User {
   id            String    @id @default(cuid())
+  clerkId       String    @unique
   name          String?
   email         String    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
-  workspaces    WorkspaceMember[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   // Tasks assigned to user
   assignedTasks Task[] @relation("TaskToUser")
-  createdTasks Task[] @relation("CreatedTasks")
+  createdTasks  Task[] @relation("CreatedTasks")
 
   // Comments
   comments Comment[]
+
+  // Workspaces
+  workspaces WorkspaceMember[]
 }
 
 model Workspace {
   id          String   @id @default(cuid())
+  clerkOrgId  String?  @unique // Link to Clerk Organization
   name        String
   slug        String   @unique
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  members     WorkspaceMember[]
-  projects    Project[]
+  members  WorkspaceMember[]
+  projects Project[]
 }
 
 model WorkspaceMember {
-  id           String     @id @default(cuid())
-  workspaceId  String
-  userId       String
-  role         MemberRole @default(MEMBER)
-  createdAt    DateTime   @default(now())
+  id          String     @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        MemberRole @default(MEMBER)
+  createdAt   DateTime   @default(now())
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -114,19 +118,19 @@ model Task {
   status      TaskStatus @default(TODO)
   priority    Priority   @default(MEDIUM)
   dueDate     DateTime?
-  order       Int        @default(0)  // For drag & drop ordering
+  order       Int        @default(0) // For drag & drop ordering
 
   boardId     String
   assigneeId  String?
   createdById String
 
-  board      Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  assignee   User?     @relation(name: "TaskToUser", fields: [assigneeId], references: [id])
-  createdBy  User      @relation("CreatedTasks", fields: [createdById], references: [id])
+  board     Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  assignee  User? @relation(name: "TaskToUser", fields: [assigneeId], references: [id])
+  createdBy User  @relation("CreatedTasks", fields: [createdById], references: [id])
 
-  comments    Comment[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 enum TaskStatus {
