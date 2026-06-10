@@ -27,7 +27,13 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function CreateProjectModal() {
+interface CreateProjectModalProps {
+  onProjectCreated?: () => void;
+}
+
+export function CreateProjectModal({
+  onProjectCreated,
+}: CreateProjectModalProps) {
   const [open, setOpen] = useState(false);
   const { currentWorkspace } = useWorkspace();
 
@@ -50,7 +56,8 @@ export function CreateProjectModal() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...values,
+          name: values.name,
+          description: values.description,
           workspaceId: currentWorkspace.id,
         }),
       });
@@ -60,7 +67,7 @@ export function CreateProjectModal() {
       toast.success('Project created successfully!');
       form.reset();
       setOpen(false);
-      // Refresh the projects list later (we'll use TanStack Query)
+      onProjectCreated?.(); // Trigger refresh
     } catch (error) {
       toast.error('Failed to create project');
     }

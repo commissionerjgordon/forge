@@ -48,6 +48,7 @@ A modern, full-stack SaaS project management platform built to demonstrate senio
 - Node.js 20+
 - PostgreSQL database (Neon, Supabase, or local)
 - Clerk account
+- ngrok
 
 ### 1. Clone the repository
 
@@ -90,6 +91,14 @@ npm run dev
 ```
 
 Open http://localhost:3000
+
+### 6. Run ngrok for clerk webhook forwarding
+
+```bash
+ngrok http 3000
+```
+
+Configure a webhook on clerk dashboard for user events to point to your ngrok gateway
 
 ## 📁 Project Structurebash
 
