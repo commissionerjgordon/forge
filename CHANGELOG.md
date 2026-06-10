@@ -1,5 +1,11 @@
 # forge
 
+## 0.1.4
+
+### Patch Changes
+
+- [#10](https://github.com/commissionerjgordon/forge/pull/10) [`728b596`](https://github.com/commissionerjgordon/forge/commit/728b59631c6e60a5d87c81efa5a03928e7cb8dbb) Thanks [@commissionerjgordon](https://github.com/commissionerjgordon)! - Adding project api to manage adding and viewing projects
+
 ## 0.1.3
 
 ### Patch Changes
