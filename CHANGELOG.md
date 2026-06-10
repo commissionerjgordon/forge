@@ -1,5 +1,11 @@
 # forge
 
+## 0.1.5
+
+### Patch Changes
+
+- [#12](https://github.com/commissionerjgordon/forge/pull/12) [`d72e576`](https://github.com/commissionerjgordon/forge/commit/d72e5765b08d22bfeb9a34963d943ce1faea65e6) Thanks [@commissionerjgordon](https://github.com/commissionerjgordon)! - Add workspaces api
+
 ## 0.1.4
 
 ### Patch Changes
