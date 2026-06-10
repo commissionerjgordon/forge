@@ -38,7 +38,54 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   // Handle user creation / update
-  if (eventType === 'user.created' || eventType === 'user.updated') {
+  if (eventType === 'user.created') {
+    const { id, email_addresses, first_name, last_name, image_url } = evt.data;
+    const primaryEmail = email_addresses?.[0]?.email_address;
+
+    try {
+      // Create User
+      const user = await prisma.user.upsert({
+        where: { clerkId: id },
+        update: {
+          name: `${first_name || ''} ${last_name || ''}`.trim(),
+          email: primaryEmail,
+          image: image_url,
+        },
+        create: {
+          clerkId: id,
+          name: `${first_name || ''} ${last_name || ''}`.trim(),
+          email: primaryEmail!,
+          image: image_url,
+        },
+      });
+
+      // Auto-create first Workspace for new user
+      const workspaceName = user.name
+        ? `${user.name}'s Workspace`
+        : 'My Workspace';
+
+      const workspace = await prisma.workspace.create({
+        data: {
+          name: workspaceName,
+          slug: `personal-${Date.now()}`,
+          description: 'Personal workspace',
+        },
+      });
+
+      // Add user as ADMIN
+      await prisma.workspaceMember.create({
+        data: {
+          workspaceId: workspace.id,
+          userId: user.id,
+          role: 'ADMIN',
+        },
+      });
+
+      console.log(`✅ New user + workspace created: ${primaryEmail}`);
+    } catch (error) {
+      console.error('Error creating user/workspace:', error);
+    }
+  } else if (eventType === 'user.updated') {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
 
     const primaryEmail = email_addresses[0]?.email_address;

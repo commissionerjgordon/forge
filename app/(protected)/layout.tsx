@@ -1,4 +1,5 @@
 import { Sidebar } from '@/components/layout/sidebar';
+import { WorkspaceProvider } from '@/components/providers/workspace-provider';
 import { redirect } from 'next/navigation';
 import { currentUser } from '@clerk/nextjs/server';
 
@@ -15,8 +16,10 @@ export default async function ProtectedLayout({
 
   return (
     <div className="flex h-screen bg-background">
-      <Sidebar />
-      <main className="flex-1 overflow-auto md:ml-72">{children}</main>
+      <WorkspaceProvider>
+        <Sidebar />
+        <main className="flex-1 overflow-auto md:ml-72">{children}</main>
+      </WorkspaceProvider>
     </div>
   );
 }
