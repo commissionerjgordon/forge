@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  ChevronDown,
   LayoutDashboard,
   FolderKanban,
   Users,
@@ -14,9 +15,16 @@ import {
 } from 'lucide-react';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from './theme-toggle';
+import { useWorkspace } from '@/components/providers/workspace-provider';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -29,6 +37,7 @@ export function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
   const { user } = useUser();
+  const { currentWorkspace, setCurrentWorkspace, workspaces } = useWorkspace();
 
   return (
     <>
@@ -62,7 +71,40 @@ export function Sidebar() {
             </div>
           </div>
 
-          {/* New Button */}
+          {/* Workspace Selector */}
+          <div className="px-4 py-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-between">
+                  {currentWorkspace?.name || 'Select Workspace'}
+                  <ChevronDown size={16} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-64" align="start">
+                {workspaces.length > 0 ? (
+                  workspaces.map((ws) => (
+                    <DropdownMenuItem
+                      key={ws.id}
+                      onClick={() => setCurrentWorkspace(ws)}
+                    >
+                      {ws.name}
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled>
+                    No workspaces yet
+                  </DropdownMenuItem>
+                )}
+                <Separator className="my-1" />
+                <DropdownMenuItem>
+                  <Plus size={16} className="mr-2" />
+                  New Workspace
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* New Project Button */}
           <div className="p-4">
             <Button className="w-full justify-start gap-2" size="lg">
               <Plus size={20} />
