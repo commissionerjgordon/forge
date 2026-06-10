@@ -21,7 +21,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from './theme-toggle';
 import { useWorkspace } from '@/components/providers/workspace-provider';
@@ -86,6 +85,9 @@ export function Sidebar() {
                     <DropdownMenuItem
                       key={ws.id}
                       onClick={() => setCurrentWorkspace(ws)}
+                      className={
+                        currentWorkspace?.id === ws.id ? 'bg-accent' : ''
+                      }
                     >
                       {ws.name}
                     </DropdownMenuItem>

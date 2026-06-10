@@ -6,12 +6,15 @@ type Workspace = {
   id: string;
   name: string;
   slug: string;
+  description?: string | null;
 };
 
 type WorkspaceContextType = {
   currentWorkspace: Workspace | null;
-  setCurrentWorkspace: (workspace: Workspace) => void;
   workspaces: Workspace[];
+  setCurrentWorkspace: (workspace: Workspace) => void;
+  refreshWorkspaces: () => Promise<void>;
+  loading: boolean;
 };
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(
@@ -19,33 +22,60 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(
 );
 
 export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(
     null
   );
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // For now we'll hardcode the personal workspace
-  // Later we'll fetch from API
+  const fetchWorkspaces = async () => {
+    try {
+      const res = await fetch('/api/workspaces');
+      if (res.ok) {
+        const data = await res.json();
+        setWorkspaces(data);
 
-  useEffect(() => {
-    // Temporary: Load from localStorage or default
-    const saved = localStorage.getItem('currentWorkspace');
-    if (saved) {
-      setCurrentWorkspace(JSON.parse(saved));
+        // Auto-select first workspace if none selected
+        if (data.length > 0 && !currentWorkspace) {
+          const saved = localStorage.getItem('currentWorkspaceId');
+          const found = saved
+            ? data.find((w: Workspace) => w.id === saved)
+            : data[0];
+
+          if (found) {
+            setCurrentWorkspace(found);
+            localStorage.setItem('currentWorkspaceId', found.id);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch workspaces', error);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
   const handleSetWorkspace = (workspace: Workspace) => {
     setCurrentWorkspace(workspace);
-    localStorage.setItem('currentWorkspace', JSON.stringify(workspace));
+    localStorage.setItem('currentWorkspaceId', workspace.id);
   };
+
+  const refreshWorkspaces = async () => {
+    await fetchWorkspaces();
+  };
+
+  useEffect(() => {
+    fetchWorkspaces();
+  }, []);
 
   return (
     <WorkspaceContext.Provider
       value={{
         currentWorkspace,
-        setCurrentWorkspace: handleSetWorkspace,
         workspaces,
+        setCurrentWorkspace: handleSetWorkspace,
+        refreshWorkspaces,
+        loading,
       }}
     >
       {children}
