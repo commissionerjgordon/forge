@@ -28,7 +28,7 @@ export default function LandingPage() {
         </div>
 
         <p className="text-sm text-zinc-500 mt-6">
-          No credit card required • Built with Next.js 15
+          No credit card required • Built with Next.js 16
         </p>
       </div>
     </div>
