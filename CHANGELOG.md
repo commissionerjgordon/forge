@@ -1,5 +1,11 @@
 # forge
 
+## 0.1.3
+
+### Patch Changes
+
+- [#7](https://github.com/commissionerjgordon/forge/pull/7) [`f0eaf29`](https://github.com/commissionerjgordon/forge/commit/f0eaf2958f61021b086a9b4f96cef703db1cb9aa) Thanks [@commissionerjgordon](https://github.com/commissionerjgordon)! - add projects page and create projects modal
+
 ## 0.1.2
 
 ### Patch Changes
