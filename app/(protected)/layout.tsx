@@ -15,10 +15,12 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="md:flex h-screen bg-background">
       <WorkspaceProvider>
-        <Sidebar />
-        <main className="flex-1 overflow-auto md:ml-72">{children}</main>
+        <div className="m-4 md:m-0">
+          <Sidebar />
+        </div>
+        <main className="md:flex-1 overflow-auto md:ml-72">{children}</main>
       </WorkspaceProvider>
     </div>
   );

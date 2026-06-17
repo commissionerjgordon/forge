@@ -1,4 +1,3 @@
-import { Sidebar } from '@/components/layout/sidebar';
 import { currentUser } from '@clerk/nextjs/server';
 
 export default async function DashboardPage() {
@@ -6,7 +5,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-8">
-      <Sidebar />
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold tracking-tight mb-2">
           Good morning, {user?.firstName || 'there'} 👋
