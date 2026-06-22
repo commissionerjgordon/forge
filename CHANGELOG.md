@@ -1,5 +1,11 @@
 # forge
 
+## 0.1.8
+
+### Patch Changes
+
+- [#18](https://github.com/commissionerjgordon/forge/pull/18) [`694ad3f`](https://github.com/commissionerjgordon/forge/commit/694ad3f8283dae3e1ee819628674787f4483d524) Thanks [@commissionerjgordon](https://github.com/commissionerjgordon)! - Auto load new workspaces to workspace provider in the sidebar
+
 ## 0.1.7
 
 ### Patch Changes
