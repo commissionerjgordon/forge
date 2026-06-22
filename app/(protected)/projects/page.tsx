@@ -1,17 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FolderKanban } from 'lucide-react';
+import { FolderKanban, Kanban } from 'lucide-react';
 import { CreateProjectModal } from '@/components/projects/create-project-modal';
+import { CreateBoardModal } from '@/components/boards/create-board-modal';
 
 type Project = {
   id: string;
   name: string;
   description?: string;
   slug: string;
-  workspace: {
+  boards: Array<{
+    id: string;
     name: string;
-  };
+  }>;
 };
 
 export default function ProjectsPage() {
@@ -44,14 +46,14 @@ export default function ProjectsPage() {
           <div>
             <h1 className="text-4xl font-bold tracking-tight">Projects</h1>
             <p className="text-muted-foreground mt-2">
-              Manage all your projects
+              Manage your projects and boards
             </p>
           </div>
           <CreateProjectModal onProjectCreated={fetchProjects} />
         </div>
 
         {loading ? (
-          <div className="text-center py-20">Loading projects...</div>
+          <div className="text-center py-20">Loading...</div>
         ) : projects.length === 0 ? (
           <div className="border border-dashed rounded-3xl p-20 text-center">
             <FolderKanban className="mx-auto h-20 w-20 text-muted-foreground mb-6" />
@@ -62,20 +64,47 @@ export default function ProjectsPage() {
             <CreateProjectModal onProjectCreated={fetchProjects} />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-12">
             {projects.map((project) => (
-              <div
-                key={project.id}
-                className="bg-card border rounded-2xl p-6 hover:border-violet-500 transition-all hover:shadow-md cursor-pointer"
-              >
-                <h3 className="font-semibold text-xl mb-2">{project.name}</h3>
-                {project.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-3 mb-6">
-                    {project.description}
-                  </p>
-                )}
-                <div className="text-xs text-muted-foreground">
-                  {project.workspace.name}
+              <div key={project.id} className="border rounded-3xl p-8">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h2 className="text-2xl font-semibold">{project.name}</h2>
+                    {project.description && (
+                      <p className="text-muted-foreground mt-1">
+                        {project.description}
+                      </p>
+                    )}
+                  </div>
+                  <CreateBoardModal
+                    projectId={project.id}
+                    onBoardCreated={fetchProjects}
+                  />
+                </div>
+
+                {/* Boards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {project.boards && project.boards.length > 0 ? (
+                    project.boards.map((board) => (
+                      <a
+                        key={board.id}
+                        href={`/board/${board.id}`}
+                        className="block border rounded-2xl p-6 hover:border-violet-500 hover:shadow-md transition-all group"
+                      >
+                        <Kanban className="h-8 w-8 text-violet-500 mb-4" />
+                        <h3 className="font-medium text-lg group-hover:text-violet-600">
+                          {board.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Kanban Board
+                        </p>
+                      </a>
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-12 text-muted-foreground border border-dashed rounded-2xl">
+                      No boards yet. Create your first board above.
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

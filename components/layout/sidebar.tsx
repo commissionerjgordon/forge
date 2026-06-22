@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   ChevronDown,
   LayoutDashboard,
   FolderKanban,
+  Kanban,
   Users,
   Settings,
   Plus,
@@ -24,27 +25,37 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from './theme-toggle';
 import { useWorkspace } from '@/components/providers/workspace-provider';
+import { useClickOutside } from '@/components/common/useClickOutside';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/projects', label: 'Projects', icon: FolderKanban },
+  { href: '/board', label: 'Board', icon: Kanban },
   { href: '/workspaces', label: 'Workspaces', icon: Users },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const pathname = usePathname();
   const { user } = useUser();
   const { currentWorkspace, setCurrentWorkspace, workspaces } = useWorkspace();
 
+  useClickOutside(sidebarRef, () => {
+    if (!isDropdownOpen) {
+      setIsMobileOpen(false);
+    }
+  });
+
   return (
-    <>
+    <div ref={sidebarRef}>
       {/* Mobile Menu Button */}
       <Button
         variant="ghost"
         size="icon"
-        className="fixed top-4 left-4 z-50 md:hidden"
+        className="fixed top-4 left-4 z-100 md:hidden"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
       >
         {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -56,7 +67,7 @@ export function Sidebar() {
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
-          <div className="p-6 border-b">
+          <div className="pt-4 pl-18 pr-6 pb-6 md:p-6 border-b">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-linear-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-2xl">F</span>
@@ -72,7 +83,11 @@ export function Sidebar() {
 
           {/* Workspace Selector */}
           <div className="px-4 py-4">
-            <DropdownMenu>
+            <DropdownMenu
+              open={isDropdownOpen}
+              onOpenChange={setIsDropdownOpen}
+              modal={false}
+            >
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-full justify-between">
                   {currentWorkspace?.name || 'Select Workspace'}
@@ -137,7 +152,7 @@ export function Sidebar() {
           <Separator />
 
           {/* Bottom Section */}
-          <div className="flex items-center gap-3">
+          <div className="p-4 flex items-center gap-3">
             <UserButton />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">
@@ -151,6 +166,6 @@ export function Sidebar() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
