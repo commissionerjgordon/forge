@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
+import { useWorkspace } from '@/components/providers/workspace-provider';
 
 const formSchema = z.object({
   name: z.string().min(3),
@@ -34,6 +35,7 @@ export function CreateWorkspaceModal({
   onWorkspaceCreated,
 }: CreateWorkspaceModalProps) {
   const [open, setOpen] = useState(false);
+  const { setCurrentWorkspace, refreshWorkspaces } = useWorkspace();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -50,7 +52,21 @@ export function CreateWorkspaceModal({
 
       if (!res.ok) throw new Error();
 
-      toast.success('Workspace created successfully!');
+      const newWorkspace = await res.json();
+
+      // Refresh the list
+      await refreshWorkspaces();
+
+      // Automatically switch to the new workspace
+      setCurrentWorkspace({
+        id: newWorkspace.id,
+        name: newWorkspace.name,
+        slug: newWorkspace.slug,
+        description: newWorkspace.description,
+      });
+
+      toast.success(`Switched to "${newWorkspace.name}"`);
+
       form.reset();
       setOpen(false);
       onWorkspaceCreated?.();
@@ -72,7 +88,7 @@ export function CreateWorkspaceModal({
         <DialogHeader>
           <DialogTitle>Create New Workspace</DialogTitle>
           <DialogDescription>
-            Workspaces are where your projects and team live.
+            Workspaces are shared environments for projects and team members.
           </DialogDescription>
         </DialogHeader>
 
@@ -97,7 +113,7 @@ export function CreateWorkspaceModal({
             >
               Cancel
             </Button>
-            <Button type="submit">Create Workspace</Button>
+            <Button type="submit">Create & Switch</Button>
           </div>
         </form>
       </DialogContent>

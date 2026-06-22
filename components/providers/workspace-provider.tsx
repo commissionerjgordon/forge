@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 
 type Workspace = {
   id: string;
@@ -23,40 +29,39 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(
 
 export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(
-    null
-  );
+  const [currentWorkspace, setCurrentWorkspaceState] =
+    useState<Workspace | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchWorkspaces = async () => {
+  const fetchWorkspaces = useCallback(async () => {
     try {
       const res = await fetch('/api/workspaces');
       if (res.ok) {
-        const data = await res.json();
+        const data: Workspace[] = await res.json();
         setWorkspaces(data);
 
-        // Auto-select first workspace if none selected
+        // Auto-select logic
         if (data.length > 0 && !currentWorkspace) {
-          const saved = localStorage.getItem('currentWorkspaceId');
-          const found = saved
-            ? data.find((w: Workspace) => w.id === saved)
+          const savedId = localStorage.getItem('currentWorkspaceId');
+          const toSelect = savedId
+            ? data.find((w) => w.id === savedId) || data[0]
             : data[0];
 
-          if (found) {
-            setCurrentWorkspace(found);
-            localStorage.setItem('currentWorkspaceId', found.id);
+          if (toSelect) {
+            setCurrentWorkspaceState(toSelect);
+            localStorage.setItem('currentWorkspaceId', toSelect.id);
           }
         }
       }
     } catch (error) {
-      console.error('Failed to fetch workspaces', error);
+      console.error('Failed to fetch workspaces:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentWorkspace]);
 
-  const handleSetWorkspace = (workspace: Workspace) => {
-    setCurrentWorkspace(workspace);
+  const setCurrentWorkspace = (workspace: Workspace) => {
+    setCurrentWorkspaceState(workspace);
     localStorage.setItem('currentWorkspaceId', workspace.id);
   };
 
@@ -64,16 +69,17 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     await fetchWorkspaces();
   };
 
+  // Initial load
   useEffect(() => {
     fetchWorkspaces();
-  }, []);
+  }, [fetchWorkspaces]);
 
   return (
     <WorkspaceContext.Provider
       value={{
         currentWorkspace,
         workspaces,
-        setCurrentWorkspace: handleSetWorkspace,
+        setCurrentWorkspace,
         refreshWorkspaces,
         loading,
       }}
