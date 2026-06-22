@@ -28,11 +28,13 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface CreateProjectModalProps {
+  workspaceId: string;
   onProjectCreated?: () => void;
 }
 
 export function CreateProjectModal({
   onProjectCreated,
+  workspaceId,
 }: CreateProjectModalProps) {
   const [open, setOpen] = useState(false);
   const { currentWorkspace } = useWorkspace();
@@ -58,7 +60,7 @@ export function CreateProjectModal({
         body: JSON.stringify({
           name: values.name,
           description: values.description,
-          workspaceId: currentWorkspace.id,
+          workspaceId,
         }),
       });
 
