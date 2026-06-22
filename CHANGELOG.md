@@ -1,5 +1,11 @@
 # forge
 
+## 0.1.7
+
+### Patch Changes
+
+- [#16](https://github.com/commissionerjgordon/forge/pull/16) [`ea38f0b`](https://github.com/commissionerjgordon/forge/commit/ea38f0b6c0e79e809aa9a592f0099cf6d317eeec) Thanks [@commissionerjgordon](https://github.com/commissionerjgordon)! - Add page for managing workspaces
+
 ## 0.1.6
 
 ### Patch Changes
