@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const workspaceId = req.nextUrl.searchParams.get('workspaceId');
 
   try {
     const user = await prisma.user.findUnique({
@@ -19,6 +21,7 @@ export async function GET() {
 
     const projects = await prisma.project.findMany({
       where: {
+        workspaceId: workspaceId || undefined, // Filter by workspace if provided
         workspace: {
           members: {
             some: { userId: user.id },
@@ -31,7 +34,6 @@ export async function GET() {
             id: true,
             name: true,
             description: true,
-            createdAt: true,
           },
           orderBy: { createdAt: 'desc' },
         },

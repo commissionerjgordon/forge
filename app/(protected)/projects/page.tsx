@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useWorkspace } from '@/components/providers/workspace-provider';
 import { FolderKanban, Kanban } from 'lucide-react';
 import { CreateProjectModal } from '@/components/projects/create-project-modal';
 import { CreateBoardModal } from '@/components/boards/create-board-modal';
@@ -14,16 +15,24 @@ type Project = {
     id: string;
     name: string;
   }>;
+  workspace: {
+    name: string;
+  };
 };
 
 export default function ProjectsPage() {
+  const { currentWorkspace } = useWorkspace();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchProjects = async () => {
+    if (!currentWorkspace?.id) return;
+
     setLoading(true);
     try {
-      const res = await fetch('/api/projects');
+      const res = await fetch(
+        `/api/projects?workspaceId=${currentWorkspace.id}`
+      );
       if (res.ok) {
         const data = await res.json();
         setProjects(data);
@@ -37,31 +46,47 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [currentWorkspace?.id]);
+
+  if (!currentWorkspace) {
+    return (
+      <div className="p-8 text-center">Please select a workspace first.</div>
+    );
+  }
 
   return (
     <div className="p-8">
       <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-4xl font-bold tracking-tight">Projects</h1>
             <p className="text-muted-foreground mt-2">
-              Manage your projects and boards
+              Manage your projects and boards in{' '}
+              <span className="font-medium text-foreground">
+                {currentWorkspace.name}
+              </span>
             </p>
           </div>
-          <CreateProjectModal onProjectCreated={fetchProjects} />
+          <CreateProjectModal
+            workspaceId={currentWorkspace.id}
+            onProjectCreated={fetchProjects}
+          />
         </div>
 
         {loading ? (
-          <div className="text-center py-20">Loading...</div>
+          <div className="text-center py-20">Loading projects...</div>
         ) : projects.length === 0 ? (
           <div className="border border-dashed rounded-3xl p-20 text-center">
             <FolderKanban className="mx-auto h-20 w-20 text-muted-foreground mb-6" />
             <h3 className="text-2xl font-medium">No projects yet</h3>
             <p className="text-muted-foreground mt-3 mb-8">
-              Create your first project to get started
+              Create your first project in{' '}
+              <strong>{currentWorkspace.name}</strong>
             </p>
-            <CreateProjectModal onProjectCreated={fetchProjects} />
+            <CreateProjectModal
+              workspaceId={currentWorkspace.id}
+              onProjectCreated={fetchProjects}
+            />
           </div>
         ) : (
           <div className="space-y-12">
@@ -102,7 +127,7 @@ export default function ProjectsPage() {
                     ))
                   ) : (
                     <div className="col-span-full text-center py-12 text-muted-foreground border border-dashed rounded-2xl">
-                      No boards yet. Create your first board above.
+                      No boards yet. Click "New Board" to create one.
                     </div>
                   )}
                 </div>
