@@ -1,5 +1,11 @@
 # forge
 
+## 0.1.6
+
+### Patch Changes
+
+- [#14](https://github.com/commissionerjgordon/forge/pull/14) [`71da880`](https://github.com/commissionerjgordon/forge/commit/71da880a1ea209404090dda01db917f8dd022523) Thanks [@commissionerjgordon](https://github.com/commissionerjgordon)! - Adding feature for kanban boards
+
 ## 0.1.5
 
 ### Patch Changes
