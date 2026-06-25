@@ -52,6 +52,7 @@ export async function GET(req: NextRequest) {
 
   const projectId = req.nextUrl.searchParams.get('projectId');
   const boardId = req.nextUrl.searchParams.get('boardId');
+  const workspaceId = req.nextUrl.searchParams.get('workspaceId');
 
   try {
     if (boardId) {
@@ -84,8 +85,21 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(boards);
     }
 
+    if (workspaceId) {
+      const boards = await prisma.board.findMany({
+        where: {
+          project: {
+            workspaceId,
+          },
+        },
+        orderBy: { createdAt: 'asc' }, // First board = default
+        take: 5,
+      });
+      return NextResponse.json(boards);
+    }
+
     return NextResponse.json(
-      { error: 'projectId or boardId is required' },
+      { error: 'workspaceId or projectId or boardId is required' },
       { status: 400 }
     );
   } catch (error) {

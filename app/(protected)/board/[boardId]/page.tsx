@@ -2,7 +2,9 @@
 
 import { useParams } from 'next/navigation';
 import { KanbanBoard } from '@/components/kanban/kanban-board';
+import { useWorkspace } from '@/components/providers/workspace-provider';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 type Board = {
   id: string;
@@ -12,8 +14,10 @@ type Board = {
 
 export default function BoardPage() {
   const { boardId } = useParams();
+  const { currentWorkspace } = useWorkspace();
   const [board, setBoard] = useState<Board | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchBoard = async () => {
@@ -32,6 +36,10 @@ export default function BoardPage() {
 
     fetchBoard();
   }, [boardId]);
+
+  useEffect(() => {
+    router.push('/board');
+  }, [currentWorkspace?.id]);
 
   if (loading) return <div className="p-8">Loading board...</div>;
   if (!board) return <div className="p-8">Board not found</div>;

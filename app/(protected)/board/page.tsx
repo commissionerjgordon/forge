@@ -1,35 +1,62 @@
 'use client';
 
 import { useWorkspace } from '@/components/providers/workspace-provider';
-import { KanbanBoard } from '@/components/kanban/kanban-board';
-import { CreateTaskModal } from '@/components/kanban/create-task-modal';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 
-export default function BoardPage() {
+export default function BoardRedirectPage() {
   const { currentWorkspace } = useWorkspace();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
-  if (!currentWorkspace) {
+  useEffect(() => {
+    const redirectToDefaultBoard = async () => {
+      if (!currentWorkspace?.id) {
+        router.push('/projects');
+        return;
+      }
+
+      try {
+        // Better: Let's fetch the first board directly
+        const boardRes = await fetch(
+          `/api/boards?workspaceId=${currentWorkspace.id}`
+        );
+
+        if (boardRes.ok) {
+          const boards = await boardRes.json();
+
+          if (boards.length > 0) {
+            // Go to the first board (we can make one "default" later)
+            router.push(`/board/${boards[0].id}`);
+          } else {
+            // No boards yet → go to projects
+            router.push('/projects');
+          }
+        } else {
+          router.push('/projects');
+        }
+      } catch (error) {
+        console.error(error);
+        router.push('/projects');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    redirectToDefaultBoard();
+  }, [currentWorkspace, router]);
+
+  if (loading) {
     return (
-      <div className="p-8 text-center">Please select a workspace first.</div>
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+          <p className="text-muted-foreground">Loading your board...</p>
+        </div>
+      </div>
     );
   }
 
-  return (
-    <div className="flex flex-col h-full">
-      <div className="border-b p-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Board</h1>
-          <p className="text-muted-foreground">{currentWorkspace.name}</p>
-        </div>
-        {/* <CreateTaskModal
-          onTaskCreated={(newTask) => window.location.reload()}
-        />{' '} */}
-        {/* We'll improve this later */}
-      </div>
-
-      <div className="flex-1 p-6 overflow-hidden">
-        {/* <KanbanBoard workspaceId={currentWorkspace.id} /> */}
-      </div>
-    </div>
-  );
+  return null;
 }
