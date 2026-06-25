@@ -1,5 +1,11 @@
 # forge
 
+## 0.1.9
+
+### Patch Changes
+
+- e617dee: Add task status persistence for drag and drop changes on kanban board
+
 ## 0.1.8
 
 ### Patch Changes
