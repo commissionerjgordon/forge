@@ -1,5 +1,11 @@
 # forge
 
+## 0.1.10
+
+### Patch Changes
+
+- db642ef: Updating login for /board on sidebar to route to a default board in the current workspace
+
 ## 0.1.9
 
 ### Patch Changes
