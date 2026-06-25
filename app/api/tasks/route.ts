@@ -57,6 +57,41 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function PATCH(req: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const { taskId, status, order } = body;
+
+    if (!taskId || !status) {
+      return NextResponse.json(
+        { error: 'taskId and status are required' },
+        { status: 400 }
+      );
+    }
+
+    const updatedTask = await prisma.task.update({
+      where: { id: taskId },
+      data: {
+        status,
+        ...(order !== undefined && { order }),
+      },
+    });
+
+    return NextResponse.json(updatedTask);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: 'Failed to update task' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function GET(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) {

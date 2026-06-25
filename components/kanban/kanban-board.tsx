@@ -118,26 +118,41 @@ export function KanbanBoard({ boardId }: KanbanBoardProps) {
     }
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
     const taskId = active.id as string;
     const newStatus = over.id as Task['status'];
 
+    // Optimistic update
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId ? { ...task, status: newStatus } : task
       )
     );
 
-    // TODO: Persist to backend
-    toast.success(`Moved to ${newStatus.replace('_', ' ')}`);
-  };
+    try {
+      const res = await fetch('/api/tasks', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskId,
+          status: newStatus,
+        }),
+      });
 
-  //   useEffect(() => {
-  //     fetchTasks();
-  //   }, [workspaceId]);
+      if (!res.ok) {
+        throw new Error();
+      }
+
+      toast.success(`Moved to ${newStatus.replace('_', ' ')}`);
+    } catch (error) {
+      toast.error('Failed to update task position');
+      // Revert optimistic update on error
+      fetchTasks();
+    }
+  };
 
   useEffect(() => {
     fetchTasks();
