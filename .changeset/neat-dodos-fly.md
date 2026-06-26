@@ -1,0 +1,5 @@
+---
+'forge': patch
+---
+
+Cleanup sidebar
