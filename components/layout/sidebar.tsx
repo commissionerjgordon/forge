@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -10,7 +10,6 @@ import {
   Kanban,
   Users,
   Settings,
-  Plus,
   Menu,
   X,
 } from 'lucide-react';
@@ -32,7 +31,7 @@ const navItems = [
   { href: '/projects', label: 'Projects', icon: FolderKanban },
   { href: '/board', label: 'Board', icon: Kanban },
   { href: '/workspaces', label: 'Workspaces', icon: Users },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  // { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function Sidebar() {
@@ -112,21 +111,8 @@ export function Sidebar() {
                     No workspaces yet
                   </DropdownMenuItem>
                 )}
-                <Separator className="my-1" />
-                <DropdownMenuItem>
-                  <Plus size={16} className="mr-2" />
-                  New Workspace
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-
-          {/* New Project Button */}
-          <div className="p-4">
-            <Button className="w-full justify-start gap-2" size="lg">
-              <Plus size={20} />
-              New Project
-            </Button>
           </div>
 
           {/* Navigation */}
