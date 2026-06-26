@@ -1,5 +1,11 @@
 # forge
 
+## 0.1.11
+
+### Patch Changes
+
+- [#24](https://github.com/commissionerjgordon/forge/pull/24) [`84f409c`](https://github.com/commissionerjgordon/forge/commit/84f409cb8e3d52f1183eb14e14ac09be9e544785) Thanks [@commissionerjgordon](https://github.com/commissionerjgordon)! - Cleanup sidebar
+
 ## 0.1.10
 
 ### Patch Changes
